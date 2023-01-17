@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import "./App.css";
+import Slides from "./Slides";
 
-function App() {
+const App = () => {
+  const [transition, setTransition] = useState(true);
+  const [translate, setTranslate] = useState(0);
+
+  const handleTransitionEnd = useCallback(() => {
+    setTransition(false);
+    setTranslate(0);
+    setSlides((prev) => {
+      prev.shift();
+      prev.push(prev[0]);
+      return prev;
+    });
+    setTimeout(() => {
+      setTransition(true);
+    }, 100);
+  }, []);
+
+  const [slides, setSlides] = useState([11, 22, 33, 11]);
+
+  const handleNext = () => {
+    setTranslate(1);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div onClick={handleNext} className="App">
+        {slides.map((ele, indx) => (
+          <Slides
+            indx={indx}
+            slides={slides}
+            translate={translate}
+            transition={transition}
+            key={indx}
+            handleTransitionEnd={handleTransitionEnd}
+          />
+        ))}
+      </div>
+    </>
   );
-}
+};
 
 export default App;
